@@ -39,8 +39,8 @@ headurl: http://47.115.43.128:8080/images/image/head.jpg
 #腾讯云短信key
 tencent-yun:
   access:
-    secretId: 
+    secretId:
     secretKey:
-    templateID: 709776
-    smsSdkAppid: 1400422167
-    sign: 住住侠
+    templateID:
+    smsSdkAppid:
+    sign:
