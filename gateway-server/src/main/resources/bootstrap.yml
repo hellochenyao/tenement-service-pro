@@ -1,0 +1,90 @@
+eureka:
+  client:
+    serviceUrl:
+      register-with-eureka: true
+      fetch-registry: true
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    preferIpAddress: true
+
+server:
+  port: 10003
+spring:
+  profiles:
+    active: dev
+#tenement:
+#  server:
+#    port:
+#      user: 3000 #用户模块端口
+#      message: 3002 #消息模块端口
+#      invitation: 3001 #帖子模块端口
+
+
+---
+spring:
+  profiles: local
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      routes:
+        - id: gateRoute
+          uri: http://127.0.0.1:10003
+          predicates:
+            - Path=/api/**
+          filters:
+            - StripPrefix=1
+
+---
+spring:
+  profiles: dev
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+      discovery:
+        locator:
+          enabled: false
+          lowerCaseServiceId: true
+      routes:
+        - id: gateRoute #测试
+          uri: http://127.0.0.1:${server.port}
+          predicates:
+            - Path=/api/**
+          filters:
+            - StripPrefix=1
+        - id: tenement-user #用户模块
+#          uri: http://127.0.0.1:${tenement.server.port.user}
+          uri: lb://tenement-user
+          predicates:
+            - Path=/user/**
+          filters:
+            - StripPrefix=1
+        - id: tenement-message #消息模块
+#          uri: http://127.0.0.1:${tenement.server.port.message}
+          uri: lb://tenement-message
+          predicates:
+            - Path=/message/**
+          filters:
+            - StripPrefix=1
+        - id: tenement-invitation #帖子模块
+#          uri: http://127.0.0.1:${tenement.server.port.invitation}
+          uri: lb://tenement-invitation
+          predicates:
+            - Path=/invitation/**
+          filters:
+            - StripPrefix=1
+
+#不进行权限校验
+ignore:
+  check:
+     url: /app

@@ -1,0 +1,66 @@
+server:
+  port: 3001
+spring:
+  profiles:
+    active: dev
+  application:
+    name: tenement-invitation
+  cloud:
+    refresh:
+      refreshable: none
+      extra-refreshable: none
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      label: master
+      profile: dev
+management:
+  endpoint:
+    shutdown:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+---
+spring:
+  profiles: local
+eureka:
+  client:
+    serviceUrl:
+      register-with-eureka: true
+      fetch-registry: true
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    preferIpAddress: true
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 6000
+        readTimeout: 6000
+        loggerLevel: basic
+  hystix:
+    enabled: true
+---
+spring:
+  profiles: dev
+eureka:
+  client:
+    serviceUrl:
+      register-with-eureka: true
+      fetch-registry: true
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    preferIpAddress: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 6000
+        readTimeout: 6000
+        loggerLevel: basic
+  hystrix:
+    enabled: true
