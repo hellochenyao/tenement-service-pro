@@ -38,7 +38,7 @@ public class UserMsgServiceImpl implements UserMsgService {
     private UserMsgDao userMsgDao;
 
     @Autowired
-    private IInvatitionFeignClient invatitionFeignClient;
+    private IInvatitionFeignClient invtitionFeignClient;
 
     @Autowired
     private IUserInfoFeignClient userInfoFeignClient;
@@ -50,7 +50,7 @@ public class UserMsgServiceImpl implements UserMsgService {
 
     @Override
     public UserMsgEntity leaveWord(UserMsgBo userMsgBo) {
-        InvitationDto invitationDto = invatitionFeignClient.findInvitationById(1,userMsgBo.getInvitationId());
+        InvitationDto invitationDto = invtitionFeignClient.findInvitationById(1,userMsgBo.getInvitationId());
         if(invitationDto.getId() == -1){
             throw new BusinessException("NO_INVITATION","该帖子不存在");
         }

@@ -46,6 +46,7 @@ public class AccessTokenController {
             UserInfoEntity userInfo = userAuthService.login(phone, thirdLoginBo);
             ResponseTokenPost response = new ResponseTokenPost();
             JwtDto jwtDto = userInfo.assignToken();
+            response.setUserId(userInfo.getId());
             response.setJwt(jwtDto.getToken());
             response.setRefreshToken(jwtDto.getRefreshToken());
             return response;

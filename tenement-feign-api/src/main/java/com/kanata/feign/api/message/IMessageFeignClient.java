@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 )
 public interface IMessageFeignClient {
 
-    @GetMapping(value = "/message/nums/{invitationId}")
+    @GetMapping(value = "/app/message/nums/{invitationId}")
     Integer findResponseMsgNums(@PathVariable("invitationId") int invitationId);
 
 }

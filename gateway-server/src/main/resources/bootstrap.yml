@@ -11,7 +11,11 @@ server:
   port: 10003
 spring:
   profiles:
-    active: dev
+    active: prod
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
 #tenement:
 #  server:
 #    port:
@@ -88,3 +92,59 @@ spring:
 ignore:
   check:
      url: /app
+
+---
+spring:
+  profiles: prod
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+      discovery:
+        locator:
+          enabled: false
+          lowerCaseServiceId: true
+      routes:
+        - id: gateRoute #测试
+          uri: http://127.0.0.1:${server.port}
+          predicates:
+            - Path=/api/**
+          filters:
+            - StripPrefix=1
+        - id: tenement-user #用户模块
+          #          uri: http://127.0.0.1:${tenement.server.port.user}
+          uri: lb://tenement-user
+          predicates:
+            - Path=/user/**
+          filters:
+            - StripPrefix=1
+        - id: tenement-message #消息模块
+          #          uri: http://127.0.0.1:${tenement.server.port.message}
+          uri: lb://tenement-message
+          predicates:
+            - Path=/message/**
+          filters:
+            - StripPrefix=1
+        - id: tenement-invitation #帖子模块
+          #          uri: http://127.0.0.1:${tenement.server.port.invitation}
+          uri: lb://tenement-invitation
+          predicates:
+            - Path=/invitation/**
+          filters:
+            - StripPrefix=1
+#            - name: RequestRateLimiter
+#              args:
+#                 key-resolver: '#{@pathKeyResolver}'
+#                 redis-rate-limiter.replenishRate: 10
+#                 redis-rate-limiter.burstCapacity: 100
+
+
+#不进行权限校验
+ignore:
+  check:
+    url: /app

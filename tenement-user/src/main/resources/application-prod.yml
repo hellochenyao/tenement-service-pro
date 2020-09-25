@@ -1,0 +1,47 @@
+spring:
+  datasource:
+    url: jdbc:mysql://rm-bp13o1q3llu8vn5z6lo.mysql.rds.aliyuncs.com:3306/tenement_zuzu
+    username: adminroot
+    password: xyza123!@#
+    driver-class-name: com.mysql.jdbc.Driver
+    tomcat:
+      max-wait: 3000
+      initial-size: 10
+      max-idle: 60
+      min-idle: 10
+      max-active: 80
+      time-between-eviction-runs-millis: 3600000
+      test-on-borrow: false
+      min-evictable-idle-time-millis: 1800000
+      num-tests-per-eviction-run: 3
+      connection-properties: useUnicode=true;characterEncoding=utf-8;
+      test-while-idle: true
+      validation-query: SELECT 1
+  jpa:
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: abcxyz123
+    timeout: 100000
+weapp:
+  appid: wx4bd9b37ecbf2be86
+  secret: 99254835eda2e562cb686ed3c23a0ca0
+
+qqmap:
+  key: 7I3BZ-TZKCP-HWQDI-VM5ZZ-5FBG5-4ZBX4
+
+##头像地址
+headurl: http://47.115.43.128:8080/images/image/head.jpg
+
+#腾讯云短信key
+tencent-yun:
+  access:
+    secretId: AKID2ppb0AAkjUzHIv5K7e9QOGxCBsKPuoZ4
+    secretKey: IJ3GHvIN2KIzParra8UUDeY5JGxDEuKZ
+    templateID: 709776
+    smsSdkAppid: 1400422167
+    sign: 住住侠

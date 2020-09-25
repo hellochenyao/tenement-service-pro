@@ -3,9 +3,12 @@ package com.kanata.user.service.app;
 
 import com.kanata.core.entity.UserInfoEntity;
 import com.kanata.user.dao.app.vo.UserInfoVo;
+import com.kanata.user.service.app.bo.userInfo.LevelInfoBo;
 import com.kanata.user.service.app.bo.userInfo.UserLoginBo;
 import com.kanata.user.service.app.bo.userInfo.UserModifyBo;
 import org.springframework.data.domain.Page;
+
+import java.io.IOException;
 
 /**
  * 微信相关 service
@@ -26,6 +29,10 @@ public interface UserInfoService {
     void modify(UserModifyBo userModifyBo);
 
     void updateLastLoginTime(int id);
+
+    void updateLevelExp(int userId,Long exp);
+
+    LevelInfoBo addLevelExpBySignIn(int userId);
 
 
 

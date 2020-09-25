@@ -25,5 +25,6 @@ public class ConstantConfig {
      */
     public static final String SESSION_KEY = "app_session";
 
+    public static final String UPLOAD_PICTURE = "app";
 
 }

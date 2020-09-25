@@ -4,6 +4,7 @@ import com.kanata.core.entity.UserInfoEntity;
 import com.kanata.user.controller.api.userinfo.*;
 import com.kanata.user.dao.app.vo.UserInfoVo;
 import com.kanata.user.service.app.UserInfoService;
+import com.kanata.user.service.app.bo.userInfo.LevelInfoBo;
 import com.kanata.user.service.app.bo.userInfo.UserModifyBo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +52,11 @@ public class UserInfoController {
         ResponseUserInfoGet response = new ResponseUserInfoGet();
         UserInfoVo userInfoVo = userInfoService.info(userId);
         BeanUtils.copyProperties(userInfoVo, response);
-
+        if(userInfoVo.getLastLoginTime().toLocalDate().equals(LocalDate.now())){
+            response.getLevel().getLevelInfo().setSignState(true);
+        }else{
+            response.getLevel().getLevelInfo().setSignState(false);
+        }
         return response;
 
     }
@@ -91,5 +97,13 @@ public class UserInfoController {
         userInfoService.updateLastLoginTime(id);
     }
 
+    @ApiOperation(value = "用户签到首次登录增加经验")
+    @PutMapping(value = "/signIn")
+    public ResponseLevelInfoPut signIn(@PathVariable int userId){
+        LevelInfoBo levelInfoBo = userInfoService.addLevelExpBySignIn(userId);
+        ResponseLevelInfoPut response = new ResponseLevelInfoPut();
+        BeanUtils.copyProperties(levelInfoBo,response);
+        return response;
+    }
 
 }

@@ -5,24 +5,24 @@ spring:
     active: dev
   application:
     name: tenement-message
-  cloud:
-    refresh:
-      refreshable: none
-      extra-refreshable: none
-    config:
-      discovery:
-        enabled: true
-        service-id: config-server
-      label: master
-      profile: dev
-management:
-  endpoint:
-    shutdown:
-      enabled: false
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+#  cloud:
+#    refresh:
+#      refreshable: none
+#      extra-refreshable: none
+#    config:
+#      discovery:
+#        enabled: true
+#        service-id: config-server
+#      label: master
+#      profile: dev
+#management:
+#  endpoint:
+#    shutdown:
+#      enabled: false
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
 ---
 spring:
   profiles: local
@@ -46,6 +46,27 @@ feign:
 ---
 spring:
   profiles: dev
+eureka:
+  client:
+    serviceUrl:
+      register-with-eureka: true
+      fetch-registry: true
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    preferIpAddress: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 6000
+        readTimeout: 6000
+        loggerLevel: basic
+  hystrix:
+    enabled: true
+---
+spring:
+  profiles: prod
 eureka:
   client:
     serviceUrl:

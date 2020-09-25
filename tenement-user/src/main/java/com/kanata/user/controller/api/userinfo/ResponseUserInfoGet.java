@@ -1,5 +1,6 @@
 package com.kanata.user.controller.api.userinfo;
 
+import com.kanata.core.dto.user.Level;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -55,4 +56,14 @@ public class ResponseUserInfoGet {
     private String createTime;
 
     private String occupation;
+
+    /**
+     * 积分
+     */
+    private Long integral;
+
+    /**
+     * 总经验 1-100 1-10 100-1000 10-20  1000-10000 20-30 10000-
+     */
+    private Level level;
 }

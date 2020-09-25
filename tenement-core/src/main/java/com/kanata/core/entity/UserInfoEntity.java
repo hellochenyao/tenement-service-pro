@@ -3,6 +3,7 @@ package com.kanata.core.entity;
 import com.kanata.core.common.enums.OprUserType;
 import com.kanata.core.dto.jwt.JwtDataDto;
 import com.kanata.core.dto.jwt.JwtDto;
+import com.kanata.core.dto.user.Level;
 import com.kanata.core.util.JwtUtils;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -104,6 +105,16 @@ public class UserInfoEntity {
 
     @Column
     private String password;
+
+    /**
+     * 积分
+     */
+    private Long integral;
+
+    /**
+     * 总经验 1-100 1-10 100-1000 10-20  1000-10000 20-30 10000-
+     */
+    private Level level;
 
     /**
      * 分配token

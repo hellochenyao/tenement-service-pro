@@ -21,7 +21,6 @@
         <module>tenement-invitation</module>
         <module>tenement-feign-api</module>
         <module>tenement-message</module>
-        <module>config-server</module>
     </modules>
 
     <parent>
@@ -80,11 +79,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${version.lombok}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
-                <version>0.9.0</version>
             </dependency>
             <dependency>
                 <groupId>redis.clients</groupId>

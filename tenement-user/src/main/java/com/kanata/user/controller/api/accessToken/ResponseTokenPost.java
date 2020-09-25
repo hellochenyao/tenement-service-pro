@@ -11,4 +11,6 @@ public class ResponseTokenPost {
 
     @ApiModelProperty("登录时生成refreshToken")
     private String refreshToken;
+
+    private Integer userId;
 }

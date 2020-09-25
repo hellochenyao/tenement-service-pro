@@ -1,9 +1,13 @@
 package com.kanata.user.service.app.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.kanata.core.dto.user.Level;
+import com.kanata.core.entity.SignRuleEntity;
 import com.kanata.core.entity.UserInfoEntity;
 import com.kanata.core.exception.BusinessException;
 import com.kanata.core.util.DateUtils;
+import com.kanata.core.util.RedisLock;
+import com.kanata.user.dao.app.SignRuleRepo;
 import com.kanata.user.dao.app.UserInfoDao;
 import com.kanata.user.dao.app.UserInfoRepo;
 import com.kanata.user.dao.app.vo.UserInfoVo;
@@ -11,6 +15,7 @@ import com.kanata.user.framework.util.EmojiFilterUtils;
 import com.kanata.user.service.app.UserInfoService;
 import com.kanata.user.service.app.WxAuthService;
 import com.kanata.user.service.app.bo.userInfo.JwtStorageBo;
+import com.kanata.user.service.app.bo.userInfo.LevelInfoBo;
 import com.kanata.user.service.app.bo.userInfo.UserLoginBo;
 import com.kanata.user.service.app.bo.userInfo.UserModifyBo;
 import com.katana.wx.weapp.user.response.SessionKeyResponse;
@@ -26,10 +31,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,6 +70,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Autowired
     private UserInfoDao userInfoDao;
+
+    @Autowired
+    private SignRuleRepo signRuleRepo;
+
+    private static final String LOCK_KEY_PRE = "LOCK_KEY_SIGN_IN_";
 
     @Override
     public Page<UserInfoEntity> findFriends(String content, int pageNo, int pageSize) {
@@ -156,8 +173,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         EmojiFilterUtils.filterEmoji("");
 
         BeanUtils.copyProperties(userInfo, userInfoVo);
-        userInfoVo.setLastLoginTime(DateUtils.getLocalDateTimeStr(userInfo.getLastLoginTime()));
-        userInfoVo.setCreateTime(DateUtils.getLocalDateTimeStr(userInfo.getCreateTime()));
         return userInfoVo;
     }
 
@@ -215,8 +230,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         UserInfoVo userInfoVo = new UserInfoVo();
         BeanUtils.copyProperties(userInfoEntity, userInfoVo);
-        userInfoVo.setLastLoginTime(DateUtils.getLocalDateTimeStr(userInfoEntity.getLastLoginTime()));
-        userInfoVo.setCreateTime(DateUtils.getLocalDateTimeStr(userInfoEntity.getCreateTime()));
 
         return userInfoVo;
     }
@@ -272,5 +285,38 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfoEntity userInfo = userInfoRepo.findById(id);
         userInfo.setLastLoginTime(LocalDateTime.now());
         userInfoRepo.save(userInfo);
+    }
+
+    @Override
+    public void updateLevelExp(int userId,Long exp) {
+        UserInfoEntity userInfo = userInfoRepo.findById(userId);
+        userInfo.setLevel(new Level(exp));
+        userInfoRepo.save(userInfo);
+    }
+
+    @Override
+    public LevelInfoBo addLevelExpBySignIn(int userId) {
+        UserInfoEntity userInfo = userInfoRepo.findById(userId);
+        LevelInfoBo levelInfoBo = new LevelInfoBo();
+        if(!userInfo.getLastLoginTime().toLocalDate().isEqual(LocalDate.now())){
+            String lockKey = LOCK_KEY_PRE + userId;
+            Level.LevelInfo levelInfo = new Level.LevelInfo();
+            RedisLock redisLock = new RedisLock(lockKey);
+            try{
+                redisLock.lock();
+                List<SignRuleEntity> signRules = signRuleRepo.findAll((root,query,cb)->cb.conjunction());
+                levelInfo = userInfo.getLevel().signIn(userInfo.getLastLoginTime().toLocalDate(),signRules);
+                userInfoRepo.save(userInfo);
+            } catch (Exception e){
+                log.error("签到异常,{},{}",e.getMessage(),userId);
+            } finally {
+                redisLock.unlock();
+            }
+            BeanUtils.copyProperties(levelInfo,levelInfoBo);
+            levelInfoBo.setSignState(true);
+            return levelInfoBo;
+        }
+        levelInfoBo.setSignState(false);
+        return levelInfoBo;
     }
 }
