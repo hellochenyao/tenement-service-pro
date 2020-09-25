@@ -28,8 +28,8 @@ spring:
     password: abcxyz123
     timeout: 100000
 weapp:
-  appid: wx4bd9b37ecbf2be86
-  secret: 99254835eda2e562cb686ed3c23a0ca0
+  appid:
+  secret:
 
 qqmap:
   key: 7I3BZ-TZKCP-HWQDI-VM5ZZ-5FBG5-4ZBX4
